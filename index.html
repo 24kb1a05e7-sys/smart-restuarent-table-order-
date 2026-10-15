@@ -4,29 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Restaurant</title>
+    <title>Smart Restaurant Ordering System</title>
     <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
 
     <header class="header">
-        <div>
-            <h1>🍽️ Smart Restaurant</h1>
-            <p>Fresh food, smart ordering!</p>
-        </div>
+        <h1>🍽️ Smart Restaurant</h1>
         <div class="cart-badge">
             🛒 Cart: <span id="cart-count">0</span>
         </div>
     </header>
 
     <main class="container">
+
         <section class="welcome">
             <h2>Welcome to Our Restaurant!</h2>
-            <p>Select your table, choose your favorite food, and order online.</p>
+            <p>Choose your table, select your food, and place your order.</p>
 
-            <label for="table-number">Select Table Number:</label>
+            <label for="table-number">Select Table:</label>
             <select id="table-number">
-                <option value="">Choose your table</option>
+                <option value="">-- Choose Table --</option>
                 <option value="1">Table 1</option>
                 <option value="2">Table 2</option>
                 <option value="3">Table 3</option>
@@ -36,14 +35,14 @@
             </select>
         </section>
 
-        <section class="menu-section">
-            <h2>Our Menu</h2>
-
-            <div class="menu-grid" id="menu-list"></div>
+        <section>
+            <h2 class="section-title">Our Menu</h2>
+            <div id="menu-list" class="menu-grid"></div>
         </section>
 
         <section class="cart-section">
-            <h2>🛒 Your Order</h2>
+            <h2>Your Order</h2>
+
             <div id="cart-items">
                 <p class="empty-cart">Your cart is empty.</p>
             </div>
@@ -52,18 +51,18 @@
                 Total: ₹<span id="total-price">0.00</span>
             </div>
 
-            <button id="place-order" class="order-btn">
+            <button type="button" id="place-order" class="order-btn">
                 Place Order
             </button>
 
-            <div id="order-message" role="status" aria-live="polite"></div>
+            <p id="order-message" role="status" aria-live="polite"></p>
         </section>
+
     </main>
 
     <footer>
-        <p>© 2026 Smart Restaurant | Happy Dining!</p>
+        <p>Smart Restaurant Ordering System</p>
     </footer>
 
-    <script src="script.js"></script>
 </body>
 </html>
