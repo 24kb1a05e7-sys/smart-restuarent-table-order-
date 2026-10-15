@@ -1,3 +1,6 @@
+"use strict";
+
+// Restaurant food menu
 const menu = [
     {
         id: 1,
@@ -44,7 +47,7 @@ const menu = [
     {
         id: 7,
         name: "Ice Cream",
-        description: "Delicious vanilla ice cream",
+        description: "Vanilla ice cream",
         price: 59,
         emoji: "🍨"
     },
@@ -64,8 +67,10 @@ const menu = [
     }
 ];
 
+// Shopping cart
 let cart = [];
 
+// HTML elements
 const menuList = document.getElementById("menu-list");
 const cartItems = document.getElementById("cart-items");
 const cartCount = document.getElementById("cart-count");
@@ -74,20 +79,28 @@ const tableNumber = document.getElementById("table-number");
 const orderMessage = document.getElementById("order-message");
 const placeOrderButton = document.getElementById("place-order");
 
-// Display all food items
+// Display menu items
 function displayMenu() {
     menuList.innerHTML = menu.map(item => `
-        <div class="food-card">
+        <article class="food-card">
             <div class="food-image">${item.emoji}</div>
+
             <div class="food-info">
                 <h3>${item.name}</h3>
                 <p>${item.description}</p>
-                <span class="price">₹${item.price.toFixed(2)}</span>
-                <button class="add-btn" data-id="${item.id}">
+
+                <span class="price">
+                    ₹${item.price.toFixed(2)}
+                </span>
+
+                <button
+                    type="button"
+                    class="add-btn"
+                    data-id="${item.id}">
                     + Add to Cart
                 </button>
             </div>
-        </div>
+        </article>
     `).join("");
 }
 
@@ -99,19 +112,25 @@ menuList.addEventListener("click", function(event) {
 
     const id = Number(button.dataset.id);
     const food = menu.find(item => item.id === id);
+
+    if (!food) return;
+
     const existingItem = cart.find(item => item.id === id);
 
     if (existingItem) {
-        existingItem.quantity++;
+        existingItem.quantity += 1;
     } else {
-        cart.push({ ...food, quantity: 1 });
+        cart.push({
+            ...food,
+            quantity: 1
+        });
     }
 
     orderMessage.textContent = "";
     updateCart();
 });
 
-// Change item quantity or remove it
+// Increase or decrease item quantity
 cartItems.addEventListener("click", function(event) {
     const button = event.target.closest("[data-action]");
 
@@ -124,9 +143,9 @@ cartItems.addEventListener("click", function(event) {
     if (!item) return;
 
     if (action === "increase") {
-        item.quantity++;
+        item.quantity += 1;
     } else if (action === "decrease") {
-        item.quantity--;
+        item.quantity -= 1;
 
         if (item.quantity <= 0) {
             cart = cart.filter(food => food.id !== id);
@@ -137,7 +156,7 @@ cartItems.addEventListener("click", function(event) {
     updateCart();
 });
 
-// Calculate total and display cart
+// Update cart, item count, and bill
 function updateCart() {
     if (cart.length === 0) {
         cartItems.innerHTML =
@@ -145,21 +164,30 @@ function updateCart() {
     } else {
         cartItems.innerHTML = cart.map(item => `
             <div class="cart-item">
-                <div class="cart-item-name">
+                <div class="item-details">
                     <strong>${item.emoji} ${item.name}</strong>
-                    <div>₹${item.price.toFixed(2)} each</div>
+                    <br>
+                    <small>₹${item.price.toFixed(2)} each</small>
                 </div>
 
                 <div class="quantity-controls">
-                    <button data-action="decrease"
-                            data-id="${item.id}"
-                            aria-label="Decrease ${item.name}">−</button>
+                    <button
+                        type="button"
+                        data-action="decrease"
+                        data-id="${item.id}"
+                        aria-label="Decrease ${item.name}">
+                        −
+                    </button>
 
                     <span>${item.quantity}</span>
 
-                    <button data-action="increase"
-                            data-id="${item.id}"
-                            aria-label="Increase ${item.name}">+</button>
+                    <button
+                        type="button"
+                        data-action="increase"
+                        data-id="${item.id}"
+                        aria-label="Increase ${item.name}">
+                        +
+                    </button>
                 </div>
 
                 <strong>
@@ -169,7 +197,7 @@ function updateCart() {
         `).join("");
     }
 
-    const totalItems = cart.reduce(
+    const count = cart.reduce(
         (sum, item) => sum + item.quantity, 0
     );
 
@@ -177,51 +205,59 @@ function updateCart() {
         (sum, item) => sum + item.price * item.quantity, 0
     );
 
-    cartCount.textContent = totalItems;
+    cartCount.textContent = count;
     totalPrice.textContent = total.toFixed(2);
 }
 
-// Place restaurant order
+// Place an order
 placeOrderButton.addEventListener("click", function() {
     const selectedTable = tableNumber.value;
 
     if (!selectedTable) {
-        orderMessage.textContent = "Please select your table number.";
+        orderMessage.textContent =
+            "Please select a table number first.";
         tableNumber.focus();
         return;
     }
 
     if (cart.length === 0) {
-        orderMessage.textContent = "Please add food to your cart first.";
+        orderMessage.textContent =
+            "Please add at least one food item.";
         return;
     }
 
-    const orderId = "ORD" + Date.now().toString().slice(-6);
+    const orderId = "ORD" +
+        Date.now().toString().slice(-6);
+
     const total = cart.reduce(
         (sum, item) => sum + item.price * item.quantity, 0
     );
 
-    const summary = cart.map(item =>
+    const orderSummary = cart.map(item =>
         `${item.name} x ${item.quantity}`
     ).join(", ");
 
+    // Show confirmation on the page
     orderMessage.textContent =
-        `Order placed successfully! ${orderId} | ` +
-        `Table ${selectedTable} | ${summary} | ` +
-        `Total: ₹${total.toFixed(2)}`;
+        `Order placed successfully! Order ID: ${orderId}. ` +
+        `Table: ${selectedTable}. ` +
+        `Items: ${orderSummary}. ` +
+        `Total: ₹${total.toFixed(2)}.`;
 
+    // Show order confirmation
     alert(
-        `Thank you for your order!\n\n` +
-        `Order ID: ${orderId}\n` +
-        `Table: ${selectedTable}\n` +
-        `Items: ${summary}\n` +
-        `Total: ₹${total.toFixed(2)}`
+        "ORDER CONFIRMED!\n\n" +
+        "Order ID: " + orderId + "\n" +
+        "Table Number: " + selectedTable + "\n" +
+        "Items: " + orderSummary + "\n" +
+        "Total Bill: ₹" + total.toFixed(2)
     );
 
+    // Clear the cart after placing the order
     cart = [];
     updateCart();
 });
 
-// Start the application
+// Initialize application
 displayMenu();
 updateCart();
